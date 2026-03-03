@@ -63,7 +63,6 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public void deleteShipment(int shipmentId) throws SQLException {
         try {
-            // Day 11: delete insurances associated with this shipment first
             if (insuranceRepository != null) {
                 insuranceRepository.deleteByShipmentId(shipmentId);
             }
