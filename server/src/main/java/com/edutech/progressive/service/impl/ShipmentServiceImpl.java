@@ -1,74 +1,79 @@
 package com.edutech.progressive.service.impl;
 
-import com.edutech.progressive.entity.Shipment;
-import com.edutech.progressive.repository.ShipmentRepository;
-import com.edutech.progressive.service.ShipmentService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+// import com.edutech.progressive.entity.Product;
+import com.edutech.progressive.entity.Shipment;
+// import com.edutech.progressive.entity.Warehouse;
+import com.edutech.progressive.repository.ShipmentRepository;
+import com.edutech.progressive.service.ShipmentService;
+
 @Service
-public class ShipmentServiceImpl implements ShipmentService {
+public class ShipmentServiceImpl implements ShipmentService  {
+
 
     private final ShipmentRepository shipmentRepository;
 
-    // Optional to avoid context failures in certain tests
-    @Autowired(required = false)
-    private com.edutech.progressive.repository.InsuranceRepository insuranceRepository;
-
+    @Autowired
     public ShipmentServiceImpl(ShipmentRepository shipmentRepository) {
         this.shipmentRepository = shipmentRepository;
     }
 
     @Override
-    public List<Shipment> getAllShipments() throws SQLException {
-        try {
-            return new ArrayList<>(shipmentRepository.findAll());
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to fetch shipments", ex);
-        }
+    public List<Shipment> getAllShipments() {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'getAllShipments'");
+        return shipmentRepository.findAll();
     }
 
     @Override
-    public Shipment getShipmentById(int shipmentId) throws SQLException {
-        try {
-            return shipmentRepository.findByShipmentId(shipmentId);
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to fetch shipment id: " + shipmentId, ex);
-        }
+    public Shipment getShipmentById(int shipmentId) {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'getShipmentById'");
+        return shipmentRepository.findById(shipmentId).orElse(null);
     }
 
     @Override
-    public int addShipment(Shipment shipment) throws SQLException {
-        try {
-            return shipmentRepository.save(shipment).getShipmentId();
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to add shipment", ex);
-        }
+    public int addShipment(Shipment shipment) {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'addShipment'");
+        Shipment s = shipmentRepository.save(shipment);
+        return s != null ? s.getShipmentId() : -1;
+    }
+
+
+    @Override
+    public void updateShipment( Shipment shipment) {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'updateShipment'");
+        Shipment oldShipment = shipmentRepository.findById(shipment.getShipmentId()).orElse(null);
+        if(oldShipment==null) return;
+        oldShipment.setDestinationLocation(shipment.getDestinationLocation());
+        oldShipment.setExpectedDeliveryDate(shipment.getExpectedDeliveryDate());
+        oldShipment.setShipmentDate(shipment.getShipmentDate());
+        oldShipment.setSourceLocation(shipment.getSourceLocation());
+        oldShipment.setStatus(shipment.getStatus());
+        oldShipment.setWarehouse(shipment.getWarehouse());
+        oldShipment.setSourceLocation(shipment.getSourceLocation());
+
+        shipmentRepository.save(oldShipment);
+        
     }
 
     @Override
-    public void updateShipment(Shipment shipment) throws SQLException {
-        try {
-            shipmentRepository.save(shipment);
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to update shipment id: " + shipment.getShipmentId(), ex);
-        }
-    }
-
-    @Override
-    public void deleteShipment(int shipmentId) throws SQLException {
-        try {
-            if (insuranceRepository != null) {
-                insuranceRepository.deleteByShipmentId(shipmentId);
-            }
-            shipmentRepository.deleteById(shipmentId);
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to delete shipment id: " + shipmentId, ex);
-        }
+    public void deleteShipment(int shipmentId) {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'deleteShipment'");
+        // shipmentRepository.deleteById(shipmentId);
+        // Warehouse w = shipmentRepository.findByShipmentId(shipmentId).getWarehouse();
+        // Product p = shipmentRepository.findByShipmentId(shipmentId).getProduct();
+        // shipmentRepository.deleteByProduct_ProductId(p.getProductId());
+        // shipmentRepository.deleteByWarehouse_WarehouseId(p.getProductId());
+        // shipmentRepository.deleteByWarehouse_Supplier_SupplierId(p.getWarehouse().getSupplier().getSupplierId());
+        shipmentRepository.deleteById(shipmentId);
+        
     }
 } 

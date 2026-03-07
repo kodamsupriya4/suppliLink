@@ -1,124 +1,126 @@
 package com.edutech.progressive.service.impl;
 
-import com.edutech.progressive.entity.Warehouse;
-import com.edutech.progressive.repository.ProductRepository;
-import com.edutech.progressive.repository.WarehouseRepository;
-import com.edutech.progressive.service.WarehouseService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Primary
-@Service("warehouseServiceImplJpa")
-public class WarehouseServiceImplJpa implements WarehouseService {
+import javax.transaction.Transactional;
 
-    private final WarehouseRepository warehouseRepository;
-    private final ProductRepository productRepository; // may be null in 1-arg ctor
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.edutech.progressive.entity.*;
+import com.edutech.progressive.exception.NoWarehouseFoundForSupplierException;
+import com.edutech.progressive.repository.ProductRepository;
+import com.edutech.progressive.repository.SupplierRepository;
+// import com.edutech.progressive.repository.SupplierRepository;
+import com.edutech.progressive.repository.WarehouseRepository;
+import com.edutech.progressive.service.WarehouseService;
 
-    // ✅ Optional field injection to prevent context failure if not scanned in some tests
-    @Autowired(required = false)
-    private com.edutech.progressive.repository.ShipmentRepository shipmentRepository;
 
-    // Preferred constructor
+@Service("warehouseServiceJpa")
+@SuppressWarnings("null")
+public class WarehouseServiceImplJpa implements WarehouseService  {
+
+
+    private SupplierRepository supplierRepository;
+    private WarehouseRepository warehouseRepository;
+    private ProductRepository productRepository;
+    
+    
     @Autowired
-    public WarehouseServiceImplJpa(WarehouseRepository warehouseRepository,
-                                   ProductRepository productRepository) {
+    public WarehouseServiceImplJpa(WarehouseRepository warehouseRepository, ProductRepository productRepository, SupplierRepository repo) {
         this.warehouseRepository = warehouseRepository;
-        this.productRepository = productRepository;
+        this.productRepository= productRepository;
+        this.supplierRepository = repo;
     }
 
-    // Overloaded for tests that only pass repo
-    public WarehouseServiceImplJpa(WarehouseRepository warehouseRepository) {
-        this.warehouseRepository = warehouseRepository;
-        this.productRepository = null;
+
+
+    @Override
+    public List<Warehouse> getAllWarehouses() {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'getAllWarehouses'");
+        return warehouseRepository.findAll();
+
     }
 
     @Override
-    public List<Warehouse> getAllWarehouses() throws SQLException {
-        try {
-            return new ArrayList<>(warehouseRepository.findAll());
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to fetch warehouses", ex);
-        }
+    public int addWarehouse(Warehouse warehouse) {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'addWarehouse'");
+
+        
+        // Supplier supplier = supplierRepository.findById(warehouse.supplierId)
+        // .orElseThrow(() -> new IllegalArgumentException("Supplier not found: " + dto.supplierId));
+    
+
+        return warehouseRepository.save(warehouse)!= null ? warehouse.getWarehouseId() :-1;
     }
 
     @Override
-    public int addWarehouse(Warehouse warehouse) throws SQLException {
-        try {
-            Warehouse saved = warehouseRepository.save(warehouse);
-            return saved.getWarehouseId();
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to add warehouse", ex);
-        }
+    public List<Warehouse> getWarehousesSortedByCapacity() {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'getWarehousesSortedByCapa
+        // city'");
+        List<Warehouse> w = warehouseRepository.findAll();
+        Collections.sort(w);
+        return w;
     }
 
-    @Override
-    public List<Warehouse> getWarehousesSortedByCapacity() throws SQLException {
-        try {
-            List<Warehouse> list = new ArrayList<>(warehouseRepository.findAll());
-            Collections.sort(list); // Comparable by capacity
-            return list;
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to get warehouses sorted by capacity", ex);
-        }
-    }
-
-    @Override
-    public void updateWarehouse(Warehouse warehouse) throws SQLException {
-        try {
-            warehouseRepository.save(warehouse);
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to update warehouse id: " + warehouse.getWarehouseId(), ex);
-        }
-    }
-
+    
     @Override
     @Transactional
-    public void deleteWarehouse(int warehouseId) throws SQLException {
-        try {
-            // Day 10 cascade: shipments -> products -> warehouse (only if beans present)
-            if (shipmentRepository != null) {
-                shipmentRepository.deleteByWarehouseId(warehouseId);
-            }
-            if (productRepository != null) {
-                productRepository.deleteByWarehouseId(warehouseId);
-            }
-            warehouseRepository.deleteById(warehouseId);
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to delete warehouse id: " + warehouseId, ex);
-        }
+    public void updateWarehouse(Warehouse warehouse) {
+        if (warehouse == null || warehouse.getWarehouseId() == 0) return;
+        Warehouse existing = warehouseRepository.findById(warehouse.getWarehouseId()).orElse(null);
+        if (existing == null) return;
+
+      
+        existing.setWarehouseName(warehouse.getWarehouseName());
+        existing.setLocation(warehouse.getLocation());
+        existing.setCapacity(warehouse.getCapacity());
+        existing.setSupplier(warehouse.getSupplier());
+
+        
+        // try {
+       
+        //     existing.setSupplierId(warehouse.getSupplierId());
+        // } catch (NoSuchMethodError | Exception ignored) {
+        
+        // }
+
+        warehouseRepository.save(existing);
     }
 
+
+    
     @Override
-    public Warehouse getWarehouseById(int warehouseId) throws SQLException {
-        try {
-            return warehouseRepository.findByWarehouseId(warehouseId);
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to fetch warehouse id: " + warehouseId, ex);
-        }
+    // @Transactional(readOnly = true)
+    public List<Warehouse> getWarehouseBySupplier(int supplierId) throws NoWarehouseFoundForSupplierException {
+
+        List<Warehouse> w = warehouseRepository.findAllBySupplier_SupplierId(supplierId);
+        if(w==null || w.isEmpty()) throw new NoWarehouseFoundForSupplierException("null");
+        return w;
     }
 
-    @Override
-    public List<Warehouse> getWarehouseBySupplier(int supplierId) throws SQLException {
-        try {
-            List<Warehouse> viaFk = warehouseRepository.findAllBySupplierId(supplierId);
-            if (viaFk != null && !viaFk.isEmpty()) return new ArrayList<>(viaFk);
+    
 
-            List<Warehouse> viaAssoc = warehouseRepository.findAllBySupplier_SupplierId(supplierId);
-            if (viaAssoc != null && !viaAssoc.isEmpty()) return new ArrayList<>(viaAssoc);
 
-            throw new com.edutech.progressive.exception.NoWarehouseFoundForSupplierException(
-                    "No warehouses found for supplierId=" + supplierId
-            );
-        } catch (DataAccessException ex) {
-            throw new SQLException("Failed to fetch warehouses for supplier id: " + supplierId, ex);
-        }
+    public  void deleteWarehouse(int supplierId) {
+        // warehouseRepository.deleteById(warehouseId);
+        // List<Warehouse> warehouseBySuppliers = getWarehouseBySupplier(supplierId);
+        // List<Product> warehousesForProduct = productRepository.findAllByWarehouse_WarehouseId(warehouseId);
+        // productRepository.deleteByWarehouse_Supplier_SupplierId(supplierId);
+        productRepository.deleteByWarehouse_WarehouseId(supplierId);
+        warehouseRepository.deleteById(supplierId);
+        // warehouseRepository.deleteBySupplier_SupplierId(supplierId);;
     }
+
+    public  Warehouse getWarehouseById(int warehouseId) {
+        return warehouseRepository.findById(warehouseId).orElseThrow();
+    }
+
+    //Do not implement these methods in WarehouseServiceImplArraylist.java and WarehouseServiceImplJdbc.java class
+    // public void deleteWarehouse()
+
+
 } 

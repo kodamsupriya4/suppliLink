@@ -1,39 +1,34 @@
 package com.edutech.progressive.repository;
 
-import com.edutech.progressive.entity.Product;
-import org.springframework.data.jpa.repository.*;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
-import javax.transaction.Transactional;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.edutech.progressive.entity.Product;
+
+
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Integer> {
+public interface ProductRepository extends JpaRepository<Product, Integer>{
 
-    // Single product by domain ID
-    Product findByProductId(int productId);
+    @Query("Select p from Product p where p.productId = :productId")
+    Product findByProductId(@Param("productId") int productId);
 
-    // Association-based (JOIN) – keep for completeness
-    List<Product> findAllByWarehouse_WarehouseId(int warehouseId);
 
-    // ✅ FK-based finder (NO JOIN) – critical for Day 8 tests seeded via JDBC
-    @Query("SELECT p FROM Product p WHERE p.warehouseId = :warehouseId")
-    List<Product> findAllByWarehouseId(@Param("warehouseId") int warehouseId);
-
-    // (Optional) Count via association
-    int countByWarehouse_WarehouseId(Integer warehouseId);
-
-    // ✅ FK-based delete (NO JOIN)
+    List<Product> findAllByWarehouse_WarehouseId(@Param("warehouseId") int warehouseId);
+    
     @Modifying
     @Transactional
-    @Query("DELETE FROM Product p WHERE p.warehouseId = :warehouseId")
-    void deleteByWarehouseId(@Param("warehouseId") int warehouseId);
+        @EntityGraph(attributePaths = "warehouse")
+    void deleteByWarehouse_WarehouseId(@Param("warehouseId")int warehouseId);
 
-    // ✅ FK-based supplier delete (NO JOIN on Supplier)
     @Modifying
     @Transactional
-    @Query("DELETE FROM Product p WHERE p.warehouseId IN (" +
-           " SELECT w.warehouseId FROM Warehouse w WHERE w.supplierId = :supplierId)")
-    void deleteBySupplierId(@Param("supplierId") int supplierId);
+        @EntityGraph(attributePaths = "supplier")
+    void deleteByWarehouse_Supplier_SupplierId(@Param("supplierId") int supplierId);
 } 

@@ -1,37 +1,45 @@
 package com.edutech.progressive.service.impl;
 
-import com.edutech.progressive.entity.Supplier;
-import com.edutech.progressive.service.SupplierService;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Service("supplierServiceImplArraylist")
-public class SupplierServiceImplArraylist implements SupplierService {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-private final List<Supplier> s = new ArrayList<>();
+import com.edutech.progressive.entity.Supplier;
+import com.edutech.progressive.service.SupplierService;
+
+
+@Service("supplierServiceArraylist")
+public class SupplierServiceImplArraylist implements SupplierService  {
+
+    private List<Supplier> suppliers = new ArrayList<>();
+
+    @Autowired
+    public SupplierServiceImplArraylist() {
+    }
 
     @Override
     public List<Supplier> getAllSuppliers() {
-        return s;
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'getAllSuppliers'");
+        return suppliers;
     }
 
     @Override
     public int addSupplier(Supplier supplier) {
-        s.add(supplier);
-        return s.size();
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'addSupplier'");
+        suppliers.add(supplier);
+        return suppliers.size();
     }
 
     @Override
     public List<Supplier> getAllSuppliersSortedByName() {
-        Collections.sort(s);
-        return s;
-    }
-
-    @Override
-    public void emptyArrayList() {
-        s.clear();
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'getAllSuppliersSortedByName'");
+        Collections.sort(suppliers);
+        return suppliers;
     }
 } 

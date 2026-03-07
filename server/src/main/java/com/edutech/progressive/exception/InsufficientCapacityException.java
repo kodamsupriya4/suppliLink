@@ -10,4 +10,9 @@ public class InsufficientCapacityException extends RuntimeException {
     public InsufficientCapacityException(String message, Throwable cause) {
         super(message, cause);
     }
+    public InsufficientCapacityException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+    
 } 

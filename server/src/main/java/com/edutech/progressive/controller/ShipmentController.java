@@ -2,75 +2,74 @@ package com.edutech.progressive.controller;
 
 import com.edutech.progressive.entity.Shipment;
 import com.edutech.progressive.service.ShipmentService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+// import com.edutech.progressive.service.impl.ShipmentServiceImpl;
 
-import java.sql.SQLException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/shipment")
 public class ShipmentController {
 
+
     private final ShipmentService shipmentService;
 
+    
+
+    @Autowired
     public ShipmentController(ShipmentService shipmentService) {
         this.shipmentService = shipmentService;
     }
 
-    // GET /shipment
     @GetMapping
     public ResponseEntity<List<Shipment>> getAllShipments() {
-        try {
-            return ResponseEntity.ok(shipmentService.getAllShipments());
-        } catch (SQLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.status(200).body(shipmentService.getAllShipments());
     }
 
-    // GET /shipment/{shipmentID}
     @GetMapping("/{shipmentId}")
     public ResponseEntity<Shipment> getShipmentById(@PathVariable int shipmentId) {
-        try {
-            Shipment s = shipmentService.getShipmentById(shipmentId);
-            return (s != null) ? ResponseEntity.ok(s) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (SQLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Shipment s = shipmentService.getShipmentById(shipmentId);
+        if(s == null) return ResponseEntity.status(404).build();
+        return ResponseEntity.status(200).body(s);
     }
 
-    // POST /shipment
     @PostMapping
-    public ResponseEntity<Integer> createShipment(@RequestBody Shipment shipment) {
-        try {
-            int id = shipmentService.addShipment(shipment);
-            return ResponseEntity.status(HttpStatus.CREATED).body(id);
-        } catch (SQLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<Integer> addShipment(@RequestBody Shipment shipment) {
+        return ResponseEntity.status(201).body(shipmentService.addShipment(shipment));
     }
 
-    // PUT /shipment/{shipmentID}
+
     @PutMapping("/{shipmentId}")
-    public ResponseEntity<Void> updateShipment(@PathVariable int shipmentId, @RequestBody Shipment shipment) {
-        try {
-            shipment.setShipmentId(shipmentId);
-            shipmentService.updateShipment(shipment);
-            return ResponseEntity.ok().build();
-        } catch (SQLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<Void> updateShipment(@PathVariable int shipmentId,@RequestBody Shipment shipment) {
+        Shipment s = shipmentService.getShipmentById(shipmentId);
+        if(s == null) return ResponseEntity.noContent().build(); 
+        s.setShipmentId(shipmentId);
+        shipmentService.updateShipment(shipment);
+        return ResponseEntity.status(200).body(null);
     }
 
-    // DELETE /shipment/{shipmentID}
     @DeleteMapping("/{shipmentId}")
     public ResponseEntity<Void> deleteShipment(@PathVariable int shipmentId) {
-        try {
-            shipmentService.deleteShipment(shipmentId);
-            return ResponseEntity.noContent().build();
-        } catch (SQLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Shipment s = shipmentService.getShipmentById(shipmentId);
+        if(s == null) return ResponseEntity.noContent().build(); 
+        shipmentService.deleteShipment(shipmentId);
+        return ResponseEntity.status(200).build();
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleException(RuntimeException e){
+        return ResponseEntity.status(500).body(null);
     }
 } 

@@ -2,23 +2,22 @@ package com.edutech.progressive.service;
 
 import com.edutech.progressive.entity.Product;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface ProductService {
 
-    List<Product> getAllProducts() throws SQLException;
+    List<Product> getAllProducts();
 
-    Product getProductById(int productId) throws SQLException;
+    Product getProductById(int productId);
 
-    int addProduct(Product product) throws SQLException;
+    int addProduct(Product product);
 
-    void updateProduct(Product product) throws SQLException;
+    void updateProduct(Product product);
 
-    void deleteProduct(int productId) throws SQLException;
+    void deleteProduct(int productId);
 
-    // Day-8: default in interface; implemented in JPA impl
-    default List<Product> getAllProductByWarehouse(int warehouseId) throws SQLException {
-        return List.of();
+    //Do not implement these methods in ProductServiceImplJdbc.java class
+    default List<Product> getAllProductByWarehouse(int warehouseId) {
+        return null;
     }
 } 
