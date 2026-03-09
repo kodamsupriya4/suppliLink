@@ -8,3 +8,69 @@
     -loginPassword: should not be empty
 
 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      <script src="validation.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#f6f7f9; padding: 40px; }
+    .card { max-width: 380px; margin: 0 auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+    .title { margin: 0 0 16px; font-size: 1.25rem; }
+    .field { margin-bottom: 14px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; }
+    input[type="text"], input[type="password"] {
+      width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none;
+    }
+    input[aria-invalid="true"] { border-color: #dc2626; background: #fff5f5; }
+    .error { color: #b91c1c; font-size: 0.85rem; min-height: 1.1em; margin-top: 6px; }
+    .btn { width: 100%; margin-top: 6px; padding: 10px 14px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .success { color: #065f46; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 10px 12px; border-radius: 8px; margin-top: 12px; display:none; }
+  </style>
+  <!-- validation.js"></script>
+    -->
+
+</head>
+<body>
+  <div class="card">
+    <h1 class="title">Signin </h1>
+
+    <form id="loginForm" novalidate>
+      <!-- Username -->
+      <div class="field">
+        <label for="loginUsername">Username</label>
+        <input
+          type="text"
+          id="loginUsername"
+          name="username"
+          autocomplete="username"
+          aria-invalid="false"
+          aria-describedby="usernameError"
+        />
+        <div id="usernameError" class="error" aria-live="polite"></div>
+      </div>
+
+      <!-- Password -->
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <input
+          type="password"
+          id="loginPassword"
+          name="password"
+          autocomplete="current-password"
+          aria-invalid="false"
+          aria-describedby="passwordError"
+        />
+        <div id="passwordError" class="error" aria-live="polite"></div>
+      </div>
+
+      <button type="button" class="btn" onclick="login()">Sign in</button>
+
+      <div id="successMsg" class="success">Form is valid. Submitting…</div>
+    </form>
+  </div>
+</body>
+</html> 
