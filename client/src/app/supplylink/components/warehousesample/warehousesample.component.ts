@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Warehouse } from '../../types/Warehouse';
 
 @Component({
   selector: 'app-warehousesample',
@@ -9,4 +10,12 @@ import { Component } from '@angular/core';
 })
 export class WarehouseSampleComponent {
 
-}
+  warehouse: Warehouse = new Warehouse(
+    1,
+    "12",
+    "Flamingo",
+    "Nevada",
+    1000
+  );
+
+} 

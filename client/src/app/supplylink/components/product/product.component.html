@@ -1,0 +1,48 @@
+<h2>Product Management</h2>
+
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+  
+  <div>
+    <label>Product ID:</label>
+    <input type="number" formControlName="productId" />
+  </div>
+
+  <div>
+    <label>Warehouse ID:</label>
+    <input type="number" formControlName="warehouseId" />
+    <div *ngIf="productForm.get('warehouseId')?.invalid && productForm.get('warehouseId')?.touched">
+      Warehouse ID must be greater than 0.
+    </div>
+  </div>
+
+  <div>
+    <label>Product Name:</label>
+    <input type="text" formControlName="productName" />
+    <div *ngIf="productForm.get('productName')?.invalid && productForm.get('productName')?.touched">
+      Product Name is required.
+    </div>
+  </div>
+
+  <div>
+    <label>Product Description:</label>
+    <textarea formControlName="productDescription"></textarea>
+  </div>
+
+  <div>
+    <label>Quantity:</label>
+    <input type="number" formControlName="quantity" />
+    <div *ngIf="productForm.get('quantity')?.invalid && productForm.get('quantity')?.touched">
+      Quantity must be non‑negative.
+    </div>
+  </div>
+
+  <div>
+    <label>Price:</label>
+    <input type="number" formControlName="price" />
+    <div *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched">
+      Price must be greater than 0.
+    </div>
+  </div>
+
+  <button type="submit" [disabled]="productForm.invalid">Submit</button>
+</form> 

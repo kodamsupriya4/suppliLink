@@ -1,0 +1,16 @@
+
+<div *ngIf="supplierList?.length; else noData">
+  <h2>Supplier List</h2>
+
+
+<div *ngIf="supplierList?.length; else noData">
+  <div *ngFor="let s of supplierList">
+    <p>{{ s.supplierName }} {{ s.email}}</p>
+
+  </div>
+</div>
+
+
+<ng-template #noData>
+  <p>No suppliers found.</p>
+</ng-template>

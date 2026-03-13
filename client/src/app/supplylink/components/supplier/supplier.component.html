@@ -1,0 +1,80 @@
+<div class="container mt-4">
+  <h2>Supplier Form (Day 18)</h2>
+
+  <!-- Success / Error messages via async pipe -->
+  <div *ngIf="supplierSuccess$ | async as successMsg" class="alert alert-success" role="alert" aria-live="polite">
+    {{ successMsg }}
+  </div>
+
+  <div *ngIf="supplierError$ | async as errorMsg" class="alert alert-danger" role="alert" aria-live="assertive">
+    {{ errorMsg }}
+  </div>
+
+  <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" novalidate class="card p-3">
+
+    <!-- Name -->
+    <div class="mb-3">
+      <label for="name" class="form-label">Name *</label>
+      <input
+        type="text"
+        id="name"
+        class="form-control"
+        formControlName="name"
+        placeholder="Enter supplier name" />
+      <div class="text-danger mt-1" *ngIf="name.touched && name.invalid">
+        <small *ngIf="name.errors?.['required']">Name is required.</small>
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="mb-3">
+      <label for="email" class="form-label">Email *</label>
+      <input
+        type="email"
+        id="email"
+        class="form-control"
+        formControlName="email"
+        placeholder="name@example.com" />
+      <div class="text-danger mt-1" *ngIf="email.touched && email.invalid">
+        <small *ngIf="email.errors?.['required']">Email is required.</small>
+        <small *ngIf="email.errors?.['email']">Please enter a valid email address.</small>
+      </div>
+    </div>
+
+    <!-- Username -->
+    <div class="mb-3">
+      <label for="username" class="form-label">Username *</label>
+      <input
+        type="text"
+        id="username"
+        class="form-control"
+        formControlName="username"
+        placeholder="Enter username (alphanumeric/underscore only)" />
+      <div class="text-danger mt-1" *ngIf="username.touched && username.invalid">
+        <small *ngIf="username.errors?.['required']">Username is required.</small>
+        <small *ngIf="username.errors?.['specialChars']">
+          Only letters, numbers, and underscore are allowed.
+        </small>
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="mb-3">
+      <label for="password" class="form-label">Password *</label>
+      <input
+        type="password"
+        id="password"
+        class="form-control"
+        formControlName="password"
+        placeholder="Min 8 characters" />
+      <div class="text-danger mt-1" *ngIf="password.touched && password.invalid">
+        <small *ngIf="password.errors?.['required']">Password is required.</small>
+        <small *ngIf="password.errors?.['minlength']">Password must be at least 8 characters.</small>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit" [disabled]="supplierForm.invalid">
+      Submit
+    </button>
+  </form>
+</div> 

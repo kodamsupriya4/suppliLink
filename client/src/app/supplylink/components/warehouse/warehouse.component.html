@@ -1,0 +1,40 @@
+<h2>Warehouse Management</h2>
+
+<form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label>Warehouse ID:</label>
+    <input type="number" formControlName="warehouseId" />
+  </div>
+
+  <div>
+    <label>Supplier ID:</label>
+    <input type="number" formControlName="supplierId" />
+    <div *ngIf="warehouseForm.get('supplierId')?.invalid && warehouseForm.get('supplierId')?.touched">
+      Supplier ID must be greater than 0.
+    </div>
+  </div>
+
+  <div>
+    <label>Warehouse Name:</label>
+    <input type="text" formControlName="warehouseName" />
+    <div *ngIf="warehouseForm.get('warehouseName')?.invalid && warehouseForm.get('warehouseName')?.touched">
+      Warehouse Name is required.
+    </div>
+  </div>
+
+  <div>
+    <label>Location:</label>
+    <input type="text" formControlName="location" />
+  </div>
+
+  <div>
+    <label>Capacity:</label>
+    <input type="number" formControlName="capacity" />
+    <div *ngIf="warehouseForm.get('capacity')?.invalid && warehouseForm.get('capacity')?.touched">
+      Capacity must be non‑negative.
+    </div>
+  </div>
+
+  <button type="submit" [disabled]="warehouseForm.invalid">Submit</button>
+</form>
+``
