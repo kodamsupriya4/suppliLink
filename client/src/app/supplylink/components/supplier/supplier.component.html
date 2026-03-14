@@ -1,80 +1,135 @@
-<div class="container mt-4">
-  <h2>Supplier Form (Day 18)</h2>
+<h2>Supplier Registration</h2>
 
-  <!-- Success / Error messages via async pipe -->
-  <div *ngIf="supplierSuccess$ | async as successMsg" class="alert alert-success" role="alert" aria-live="polite">
-    {{ successMsg }}
+<!-- Top-level backend error banner -->
+<div *ngIf="backendError" class="alert alert-danger" role="alert">
+  {{ backendError }}
+</div>
+
+<form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" novalidate>
+  <!-- Supplier Name -->
+  <div class="form-group">
+    <label for="supplierName">Supplier Name</label>
+    <input
+      id="supplierName"
+      type="text"
+      class="form-control"
+      formControlName="supplierName"
+      [class.is-invalid]="ctrl('supplierName').invalid && (ctrl('supplierName').touched || supplierForm.submitted)"
+    />
+    <div class="invalid-feedback" *ngIf="ctrl('supplierName').errors && (ctrl('supplierName').touched || submitted)">
+      <div *ngIf="ctrl('supplierName').errors['required']">Supplier name is required.</div>
+      <div *ngIf="ctrl('supplierName').errors['pattern']">No special characters allowed.</div>
+      <div *ngIf="backendFieldErrors.supplierName">{{ backendFieldErrors.supplierName }}</div>
+    </div>
   </div>
 
-  <div *ngIf="supplierError$ | async as errorMsg" class="alert alert-danger" role="alert" aria-live="assertive">
-    {{ errorMsg }}
+  <!-- Email -->
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input
+      id="email"
+      type="email"
+      class="form-control"
+      formControlName="email"
+      [class.is-invalid]="ctrl('email').invalid && (ctrl('email').touched || submitted)"
+    />
+    <div class="invalid-feedback" *ngIf="ctrl('email').errors && (ctrl('email').touched || submitted)">
+      <div *ngIf="ctrl('email').errors['required']">Email is required.</div>
+      <div *ngIf="ctrl('email').errors['email']">Enter a valid email address.</div>
+      <div *ngIf="backendFieldErrors.email">{{ backendFieldErrors.email }}</div>
+    </div>
   </div>
 
-  <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" novalidate class="card p-3">
+  <!-- Phone -->
+  <div class="form-group">
+    <label for="phone">Phone</label>
+    <input
+      id="phone"
+      type="tel"
+      class="form-control"
+      formControlName="phone"
+      [class.is-invalid]="ctrl('phone').invalid && (ctrl('phone').touched || submitted)"
+    />
+    <div class="invalid-feedback" *ngIf="ctrl('phone').errors && (ctrl('phone').touched || submitted)">
+      <div *ngIf="ctrl('phone').errors['required']">Phone is required.</div>
+      <div *ngIf="ctrl('phone').errors['pattern']">Enter a valid 10-digit phone number.</div>
+    </div>
+  </div>
 
-    <!-- Name -->
-    <div class="mb-3">
-      <label for="name" class="form-label">Name *</label>
-      <input
-        type="text"
-        id="name"
-        class="form-control"
-        formControlName="name"
-        placeholder="Enter supplier name" />
-      <div class="text-danger mt-1" *ngIf="name.touched && name.invalid">
-        <small *ngIf="name.errors?.['required']">Name is required.</small>
+  <!-- Address -->
+  <div class="form-group">
+    <label for="address">Address</label>
+    <textarea
+      id="address"
+      rows="2"
+      class="form-control"
+      formControlName="address"
+      [class.is-invalid]="ctrl('address').invalid && (ctrl('address').touched || submitted)"
+    ></textarea>
+    <div class="invalid-feedback" *ngIf="ctrl('address').errors && (ctrl('address').touched || submitted)">
+      <div *ngIf="ctrl('address').errors['required']">Address is required.</div>
+    </div>
+  </div>
+
+  <!-- Username -->
+  <div class="form-group">
+    <label for="username">Username</label>
+    <input
+      id="username"
+      type="text"
+      class="form-control"
+      formControlName="username"
+      [class.is-invalid]="ctrl('username').invalid && (ctrl('username').touched || submitted)"
+    />
+    <div class="invalid-feedback" *ngIf="ctrl('username').errors && (ctrl('username').touched || submitted)">
+      <div *ngIf="ctrl('username').errors['required']">Username is required.</div>
+      <div *ngIf="ctrl('username').errors['pattern']">Only letters and numbers allowed (no special characters).</div>
+      <div *ngIf="backendFieldErrors.username">{{ backendFieldErrors.username }}</div>
+    </div>
+  </div>
+
+  <!-- Password -->
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input
+      id="password"
+      type="password"
+      class="form-control"
+      formControlName="password"
+      [class.is-invalid]="ctrl('password').invalid && (ctrl('password').touched || submitted)"
+    />
+    <div class="invalid-feedback" *ngIf="ctrl('password').errors && (ctrl('password').touched || submitted)">
+      <div *ngIf="ctrl('password').errors['required']">Password is required.</div>
+      <div *ngIf="ctrl('password').errors['minlength']">Password must be at least 8 characters.</div>
+      <div *ngIf="ctrl('password').errors['passwordPolicy']">
+        Password must contain at least one uppercase letter and one numeric digit.
       </div>
     </div>
+  </div>
 
-    <!-- Email -->
-    <div class="mb-3">
-      <label for="email" class="form-label">Email *</label>
-      <input
-        type="email"
-        id="email"
-        class="form-control"
-        formControlName="email"
-        placeholder="name@example.com" />
-      <div class="text-danger mt-1" *ngIf="email.touched && email.invalid">
-        <small *ngIf="email.errors?.['required']">Email is required.</small>
-        <small *ngIf="email.errors?.['email']">Please enter a valid email address.</small>
-      </div>
+  <!-- Role -->
+  <div class="form-group">
+    <label for="role">Role</label>
+    <select
+      id="role"
+      class="form-control"
+      formControlName="role"
+      [class.is-invalid]="ctrl('role').invalid && (ctrl('role').touched || submitted)"
+    >
+      <option value="" disabled>Select role</option>
+      <option value="VENDOR">Vendor</option>
+      <option value="PROCUREMENT">Procurement</option>
+      <option value="MANAGER">Manager</option>
+    </select>
+    <div class="invalid-feedback" *ngIf="ctrl('role').errors && (ctrl('role').touched || submitted)">
+      <div *ngIf="ctrl('role').errors['required']">Role is required.</div>
     </div>
+  </div>
 
-    <!-- Username -->
-    <div class="mb-3">
-      <label for="username" class="form-label">Username *</label>
-      <input
-        type="text"
-        id="username"
-        class="form-control"
-        formControlName="username"
-        placeholder="Enter username (alphanumeric/underscore only)" />
-      <div class="text-danger mt-1" *ngIf="username.touched && username.invalid">
-        <small *ngIf="username.errors?.['required']">Username is required.</small>
-        <small *ngIf="username.errors?.['specialChars']">
-          Only letters, numbers, and underscore are allowed.
-        </small>
-      </div>
-    </div>
+  <button class="btn btn-primary mt-2" type="submit" [disabled]="supplierForm.invalid">Register Supplier</button>
 
-    <!-- Password -->
-    <div class="mb-3">
-      <label for="password" class="form-label">Password *</label>
-      <input
-        type="password"
-        id="password"
-        class="form-control"
-        formControlName="password"
-        placeholder="Min 8 characters" />
-      <div class="text-danger mt-1" *ngIf="password.touched && password.invalid">
-        <small *ngIf="password.errors?.['required']">Password is required.</small>
-        <small *ngIf="password.errors?.['minlength']">Password must be at least 8 characters.</small>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" type="submit" [disabled]="supplierForm.invalid">
-      Submit
-    </button>
-  </form>
-</div> 
+  <!-- Success banner -->
+  <div *ngIf="successMessage" class="alert alert-success mt-3">
+    {{ successMessage }}
+  </div>
+</form> 

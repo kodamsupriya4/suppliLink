@@ -1,40 +1,78 @@
-<h2>Warehouse Management</h2>
+<h2>Warehouse Registration</h2>
 
-<form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()">
-  <div>
-    <label>Warehouse ID:</label>
-    <input type="number" formControlName="warehouseId" />
-  </div>
+<!-- Backend error banner -->
+<div *ngIf="backendError" class="alert alert-danger" role="alert">
+  {{ backendError }}
+</div>
 
-  <div>
-    <label>Supplier ID:</label>
-    <input type="number" formControlName="supplierId" />
-    <div *ngIf="warehouseForm.get('supplierId')?.invalid && warehouseForm.get('supplierId')?.touched">
-      Supplier ID must be greater than 0.
+<form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()" novalidate>
+  <!-- Supplier ID -->
+  <div class="form-group">
+    <label for="supplierId">Supplier ID</label>
+    <input
+      id="supplierId"
+      type="number"
+      class="form-control"
+      formControlName="supplierId"
+      [class.is-invalid]="ctrl('supplierId').invalid && (ctrl('supplierId').touched || submitted)"
+    />
+    <div class="invalid-feedback" *ngIf="ctrl('supplierId').errors && (ctrl('supplierId').touched || submitted)">
+      <div *ngIf="ctrl('supplierId').errors['required']">Supplier ID is required.</div>
+      <div *ngIf="ctrl('supplierId').errors['min']">Supplier ID must be greater than 0.</div>
     </div>
   </div>
 
-  <div>
-    <label>Warehouse Name:</label>
-    <input type="text" formControlName="warehouseName" />
-    <div *ngIf="warehouseForm.get('warehouseName')?.invalid && warehouseForm.get('warehouseName')?.touched">
-      Warehouse Name is required.
+  <!-- Warehouse Name -->
+  <div class="form-group">
+    <label for="warehouseName">Warehouse Name</label>
+    <input
+      id="warehouseName"
+      type="text"
+      class="form-control"
+      formControlName="warehouseName"
+      [class.is-invalid]="ctrl('warehouseName').invalid && (ctrl('warehouseName').touched || submitted)"
+    />
+    <div class="invalid-feedback" *ngIf="ctrl('warehouseName').errors && (ctrl('warehouseName').touched || submitted)">
+      <div *ngIf="ctrl('warehouseName').errors['required']">Warehouse name is required.</div>
+      <div *ngIf="backendFieldErrors.warehouseName">{{ backendFieldErrors.warehouseName }}</div>
     </div>
   </div>
 
-  <div>
-    <label>Location:</label>
-    <input type="text" formControlName="location" />
-  </div>
-
-  <div>
-    <label>Capacity:</label>
-    <input type="number" formControlName="capacity" />
-    <div *ngIf="warehouseForm.get('capacity')?.invalid && warehouseForm.get('capacity')?.touched">
-      Capacity must be non‑negative.
+  <!-- Location -->
+  <div class="form-group">
+    <label for="location">Location</label>
+    <input
+      id="location"
+      type="text"
+      class="form-control"
+      formControlName="location"
+      [class.is-invalid]="ctrl('location').invalid && (ctrl('location').touched || submitted)"
+    />
+    <div class="invalid-feedback" *ngIf="ctrl('location').errors && (ctrl('location').touched || submitted)">
+      <div *ngIf="ctrl('location').errors['required']">Location is required.</div>
     </div>
   </div>
 
-  <button type="submit" [disabled]="warehouseForm.invalid">Submit</button>
-</form>
-``
+  <!-- Capacity -->
+  <div class="form-group">
+    <label for="capacity">Capacity</label>
+    <input
+      id="capacity"
+      type="number"
+      class="form-control"
+      formControlName="capacity"
+      [class.is-invalid]="ctrl('capacity').invalid && (ctrl('capacity').touched || submitted)"
+    />
+    <div class="invalid-feedback" *ngIf="ctrl('capacity').errors && (ctrl('capacity').touched || submitted)">
+      <div *ngIf="ctrl('capacity').errors['required']">Capacity is required.</div>
+      <div *ngIf="ctrl('capacity').errors['min']">Capacity must be non-negative.</div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary mt-2" type="submit" [disabled]="warehouseForm.invalid">Register Warehouse</button>
+
+  <!-- Success banner -->
+  <div *ngIf="successMessage" class="alert alert-success mt-3">
+    {{ successMessage }}
+  </div>
+</form> 
