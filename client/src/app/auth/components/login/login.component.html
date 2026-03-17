@@ -1,0 +1,17 @@
+<div class="container mt-4">
+  <h2>Login</h2>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="card p-3" novalidate>
+    <div class="mb-3">
+      <label for="username" class="form-label">Username *</label>
+      <input id="username" type="text" class="form-control" formControlName="username" />
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Password *</label>
+      <input id="password" type="password" class="form-control" formControlName="password" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Login</button>
+  </form>
+</div> 
