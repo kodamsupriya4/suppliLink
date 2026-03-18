@@ -1,110 +1,68 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { SupplyLinkService } from '../../services/supplylink.service';
+import { Supplier } from '../../types/Supplier';
+
 
 @Component({
   selector: 'app-supplier',
   templateUrl: './supplier.component.html',
+  styleUrls: ['./supplier.component.scss']
 })
-export class SupplierComponent {
-  supplierForm: FormGroup;
-  submitted = false;
+export class SupplierComponent implements OnInit {
+  supplierForm!: FormGroup;
 
-  // Simulated backend error state
-  backendError: string | null = null;
-  backendFieldErrors: Record<string, string> = {};
-  successMessage: string | null = null;
+  private successSubject = new BehaviorSubject<string | null>(null);
+  private errorSubject = new BehaviorSubject<string | null>(null);
+  success$: Observable<string | null> = this.successSubject.asObservable();
+  error$: Observable<string | null> = this.errorSubject.asObservable();
 
-  // Patterns per requirements
-  // - Names: no special characters
-  private readonly noSpecialsPattern = /^[a-zA-Z0-9 ]+$/;
-  private readonly usernamePattern = /^[a-zA-Z0-9]+$/; // strictly alphanumeric
-  private readonly phonePattern = /^[0-9]{10}$/;
+  constructor(private fb: FormBuilder, private api: SupplyLinkService) {}
 
-  constructor(private fb: FormBuilder) {
+  ngOnInit(): void {
     this.supplierForm = this.fb.group({
-      supplierName: ['', [Validators.required, Validators.pattern(this.noSpecialsPattern)]],
+      supplierName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(this.phonePattern)]],
-      address: ['', [Validators.required]],
-      username: ['', [Validators.required, Validators.pattern(this.usernamePattern)]],
-      password: ['', [Validators.required, Validators.minLength(8), this.passwordPolicyValidator]],
-      role: ['', [Validators.required]],
+      phone: [''],
+      address: [''],
+      username: ['', [Validators.required, this.noSpecialCharacters()]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      role: ['', [Validators.required]]
+    });
+
+    this.supplierForm.valueChanges.subscribe(() => {
+      this.successSubject.next(null);
+      this.errorSubject.next(null);
     });
   }
 
-  // Convenience getter
-  ctrl(name: string): AbstractControl {
-    return this.supplierForm.get(name) as AbstractControl;
-  }
-
-  // Custom validator: at least one uppercase & one digit
-  passwordPolicyValidator(control: AbstractControl): ValidationErrors | null {
-    const value = (control.value || '') as string;
-    if (!value) return null;
-    const hasUpper = /[A-Z]/.test(value);
-    const hasDigit = /\d/.test(value);
-    return hasUpper && hasDigit ? null : { passwordPolicy: true };
+  noSpecialCharacters() {
+    const pattern = /^[A-Za-z0-9_]+$/;
+    return (control: FormControl) => {
+      const value = control?.value ?? '';
+      return pattern.test(value) ? null : { specialChars: true };
+    };
   }
 
   onSubmit(): void {
-    this.submitted = true;
-    this.backendError = null;
-    this.backendFieldErrors = {};
-    this.successMessage = null;
-
     if (this.supplierForm.invalid) {
-      this.supplierForm.markAllAsTouched();
+      this.errorSubject.next('Please fix the highlighted errors and try again.');
       return;
     }
-
-    // Simulate backend validation
-    const backend = this.simulateBackendError(this.supplierForm.value);
-    if (backend) {
-      // Map backend errors to UI
-      if (backend.global) this.backendError = backend.global;
-      if (backend.fields) this.backendFieldErrors = backend.fields;
-
-      // Set control errors so red borders and a11y messages appear
-      Object.keys(this.backendFieldErrors).forEach(key => {
-        const c = this.supplierForm.get(key);
-        if (c) {
-          const current = c.errors || {};
-          c.setErrors({ ...current, backend: true });
-        }
-      });
-      return;
-    }
-
-    // On success
-    this.successMessage = 'Supplier registered successfully.';
-    console.log('Supplier payload:', this.supplierForm.value);
-    this.supplierForm.reset();
-    this.submitted = false;
+    const payload = this.supplierForm.getRawValue() as Supplier;
+    this.api.addSupplier(payload).subscribe({
+      next: () => this.successSubject.next('Supplier created successfully!'),
+      error: (err) => {
+        console.error(err);
+        this.errorSubject.next('Failed to create supplier.');
+      }
+    });
   }
 
-  /** Simulates backend validations for duplicate username/email, etc. */
-  private simulateBackendError(value: any):
-    | { global?: string; fields?: Record<string, string> }
-    | null {
-    const duplicates = {
-      usernames: ['admin', 'supplier', 'manager'],
-      emails: ['taken@example.com', 'exists@duplicate.com'],
-    };
-
-    const fields: Record<string, string> = {};
-    if (duplicates.usernames.includes((value.username || '').toLowerCase())) {
-      fields['username'] = 'This username is already taken.';
-    }
-    if (duplicates.emails.includes((value.email || '').toLowerCase())) {
-      fields['email'] = 'This email is already registered.';
-    }
-
-    if (Object.keys(fields).length > 0) {
-      return {
-        global: 'Please resolve the errors below.',
-        fields,
-      };
-    }
-    return null;
-  }
+  get supplierName() { return this.supplierForm.get('supplierName') as FormControl; }
+  get email() { return this.supplierForm.get('email') as FormControl; }
+  get username() { return this.supplierForm.get('username') as FormControl; }
+  get password() { return this.supplierForm.get('password') as FormControl; }
+  get role() { return this.supplierForm.get('role') as FormControl; }
 } 
