@@ -1,68 +1,42 @@
 package com.edutech.progressive.service.impl;
 
-import java.sql.SQLException;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.edutech.progressive.dao.ProductDAO;
 import com.edutech.progressive.entity.Product;
 import com.edutech.progressive.service.ProductService;
 
-// public class ProductServiceImplJdbc implements ProductService  {
+import java.sql.SQLException;
+import java.util.List;
 
-//     private ProductDAO productDAO;
+public class ProductServiceImplJdbc implements ProductService {
 
-//     @Autowired
-// public ProductServiceImplJdbc(ProductDAO productDAO) {
-//         this.productDAO = productDAO;
-//     }
+    private ProductDAO productDAO;
 
-//     public ProductServiceImplJdbc() {
-// }
+    public ProductServiceImplJdbc(ProductDAO productDAO) {
+        this.productDAO = productDAO;
+    }
 
-//     @Override
-//     public List<Product> getAllProducts() {
-//         // TODO Auto-generated method stub
-//         // throw new UnsupportedOperationException("Unimplemented method 'getAllProducts'");
-//         return productDAO.getAllProducts();
-//     }
+    @Override
+    public List<Product> getAllProducts() throws SQLException {
+        return productDAO.getAllProducts();
+    }
 
-  
-//     @Override
-//     public Product getProductById(int productId) {
-//         // TODO Auto-generated method stub
-//         // throw new UnsupportedOperationException("Unimplemented method 'getProductById'");
-//         return productDAO.getProductById(productId);
-//     }
+    @Override
+    public Product getProductById(int productId) throws SQLException {
+        return productDAO.getProductById(productId);
+    }
 
-//     @Override
-//     public int addProduct(Product product) {
-//         // TODO Auto-generated method stub
-//         // throw new UnsupportedOperationException("Unimplemented method 'addProduct'");
-//         try {
-//             return productDAO.addProduct(product);
-//         } catch (SQLException e) {
-//             // TODO Auto-generated catch block
-//             e.printStackTrace();
-//         }
-//         return -1;
-//     }
+    @Override
+    public int addProduct(Product product) throws SQLException {
+        return productDAO.addProduct(product);
+    }
 
-//     @Override
-//     public void updateProduct(Product product) {
-//         // TODO Auto-generated method stub
-//         // throw new UnsupportedOperationException("Unimplemented method 'updateProduct'");
-//         productDAO.updateProduct(product);
-        
-        
-//     }
+    @Override
+    public void updateProduct(Product product) throws SQLException {
+        productDAO.updateProduct(product);
+    }
 
-//     @Override
-//     public void deleteProduct(int productId) {
-//         // TODO Auto-generated method stub
-//         // throw new UnsupportedOperationException("Unimplemented method 'deleteProduct'");
-//         productDAO.deleteProduct(productId);
-//     }
-
-// } 
+    @Override
+    public void deleteProduct(int productId) throws SQLException {
+        productDAO.deleteProduct(productId);
+    }
+}

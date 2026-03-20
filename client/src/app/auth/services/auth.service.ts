@@ -1,56 +1,42 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { environment } from "../../../environments/environment";
+import { Observable } from "rxjs";
+import { Supplier } from "../../supplylink/types/Supplier";
 
-/**
- * Day-22+ AuthService
- * You already have login, createUser, getToken...
- * We add helpers for role & userId used by Day-23 UI.
- */
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AuthService {
-  private readonly base = typeof window !== 'undefined' && window.location
-    ? window.location.origin
-    : '';
+  private loginUrl = `${environment.apiUrl}`;
 
-  constructor(private http: HttpClient) {}
 
-  login(payload: { username: string; password: string }): Observable<any> {
-    const url = `${this.base}/context.html/user/login`;
-    return this.http.post(url, payload);
-  }
+  httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    })
+  };
 
-  createUser(user: any): Observable<any> {
-    const url = `${this.base}/context.html/user/register`;
-    return this.http.post(url, user);
-  }
+  constructor(private http: HttpClient) { }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
-  }
-  setToken(token: string): void {
-    localStorage.setItem('token', token);
+  login(user: Partial<Supplier>): Observable<{ [key: string]: string }> {
+    return this.http.post<{ token: string }>(
+      `${this.loginUrl}/user/login`,
+      user,
+      this.httpOptions
+    );
   }
 
-  // Day 23 helpers
-  getRole(): string | null {
-    return localStorage.getItem('role');
+  getToken() {
+    return localStorage.getItem("token");
   }
-  setRole(role: string): void {
-    localStorage.setItem('role', role);
+  getRole() {
+    return localStorage.getItem("role");
   }
-  getUserId(): number | null {
-    const v = localStorage.getItem('userId');
-    return v ? Number(v) : null;
-  }
-  setUserId(id: number): void {
-    localStorage.setItem('userId', String(id));
-  }
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('userId');
+
+
+  createUser(user: Supplier): Observable<Supplier> {
+    return this.http.post<Supplier>(`${this.loginUrl}/user/register`, user);
   }
 } 

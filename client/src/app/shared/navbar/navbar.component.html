@@ -1,33 +1,17 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" routerLink="/supplylink/dashboard">SupplyLink</a>
+<nav class="navbar">
+    <ul class="navbar-list">
+        <li><a routerLink="/supplylink" class="nav-link app-name">SupplyLink</a></li>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarNav" aria-controls="navbarNav"
-            aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div id="navbarNav" class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" routerLink="/supplylink/dashboard">Dashboard</a></li>
-
-        <!-- Visible only if role !== USER -->
-        <li class="nav-item" *ngIf="role !== 'USER'">
-          <a class="nav-link" routerLink="/supplylink/supplier">Add Supplier</a>
+        <li *ngIf="role !== 'USER'">
+            <a routerLink="/supplylink/supplier" class="nav-link">Add New Supplier</a>
         </li>
-        <li class="nav-item" *ngIf="role !== 'USER'">
-          <a class="nav-link" routerLink="/supplylink/warehouse">Add Warehouse</a>
+        <li *ngIf="role !== 'USER'">
+            <a routerLink="/supplylink/warehouse" class="nav-link">Add New Warehouse</a>
         </li>
-        <li class="nav-item" *ngIf="role !== 'USER'">
-          <a class="nav-link" routerLink="/supplylink/product">Add Product</a>
+        <li *ngIf="role === 'USER'">
+            <a routerLink="/supplylink/product" class="nav-link">Add New Product</a>
         </li>
-      </ul>
+    </ul>
 
-      <div class="d-flex">
-        <span class="navbar-text me-3">Role: {{ role || 'GUEST' }}</span>
-        <button class="btn btn-outline-light btn-sm" (click)="logout()">Logout</button>
-      </div>
-    </div>
-  </div>
-</nav>
+    <app-logout></app-logout>
+</nav> 

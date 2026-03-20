@@ -1,57 +1,33 @@
 package com.edutech.progressive.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-// import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-
-import javax.persistence.Table;
-
-// import com.fasterxml.jackson.annotation.JsonIgnore;
-
-// import org.springframework.beans.factory.annotation.Autowired;
-
+import javax.persistence.*;
 
 @Entity
-@Table(name = "warehouse")
-public class Warehouse implements Comparable<Warehouse>{
+public class Warehouse implements Comparable<Warehouse> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "warehouse_id")
     private int warehouseId;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "supplier_id")
-    // @JsonIgnore
+    
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "supplierId")
     private Supplier supplier;
-
-    @Column(name = "capacity")
+    private String warehouseName;
+    private String location;
     private int capacity;
 
-    @Column(name = "location")
-    private String location;
+    public Warehouse() {
+    }
 
-    
-    @Column(name = "warehouse_name")
-    private String warehouseName;
-
-public Warehouse(int warehouseId, Supplier supplier, int capacity, String location, String warehouseName) {
+    public Warehouse(int warehouseId, int supplierId, String warehouseName, String location, int capacity) {
         this.warehouseId = warehouseId;
-        this.supplier = supplier;
-        this.capacity = capacity;
-        this.location = location;
+        this.supplier.setSupplierId(supplierId);
         this.warehouseName = warehouseName;
+        this.location = location;
+        this.capacity = capacity;
     }
-    public Warehouse(){
-        
-    }
-public int getWarehouseId() {
+
+    public int getWarehouseId() {
         return warehouseId;
     }
 
@@ -67,12 +43,12 @@ public int getWarehouseId() {
         this.supplier = supplier;
     }
 
-    public int getCapacity() {
-        return capacity;
+    public String getWarehouseName() {
+        return warehouseName;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
     }
 
     public String getLocation() {
@@ -82,16 +58,18 @@ public int getWarehouseId() {
     public void setLocation(String location) {
         this.location = location;
     }
-@Override
-public int compareTo(Warehouse o) {
-    // TODO Auto-generated method stub
-    // throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
-    return -Integer.compare(this.capacity, o.capacity);
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    @Override
+    public int compareTo(Warehouse otherWarehouse) {
+        // Implement comparison logic based on warehouse capacity
+        return Double.compare(otherWarehouse.getCapacity(), this.getCapacity());
+    }
 }
-public String getWarehouseName() {
-    return warehouseName;
-}
-public void setWarehouseName(String warehouseName) {
-    this.warehouseName = warehouseName;
-}
-} 

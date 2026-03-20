@@ -1,28 +1,56 @@
+
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Product } from '../../types/Product';
+import { Warehouse } from '../../types/Warehouse';
+import { Observable, of } from 'rxjs';
+import { SupplyLinkService } from '../../services/supplylink.service';
 
 @Component({
-  selector: 'app-product',
-  templateUrl: './product.component.html',
+    selector: 'app-product',
+    templateUrl: './product.component.html',
+    styleUrls: ['./product.component.scss']
 })
 export class ProductComponent implements OnInit {
-  productForm!: FormGroup;
+    productForm!: FormGroup;
+    warehouses!: Observable<Warehouse[]>;
+    productError: Observable<string> = of('');
+    productSuccess: Observable<string> = of('');
+    isFormSubmitted: boolean = false;
+    userId!: number;
 
-  ngOnInit(): void {
-    this.productForm = new FormGroup({
-      productId: new FormControl(''),
-      warehouseId: new FormControl('', [Validators.required, Validators.min(1)]),
-      productName: new FormControl('', Validators.required),
-      productDescription: new FormControl(''),
-      quantity: new FormControl('', [Validators.required, Validators.min(0)]),
-      price: new FormControl('', [Validators.required, Validators.min(1)])
-    });
-  }
+    constructor(
+        private formBuilder: FormBuilder,
+        private supplyLinkService: SupplyLinkService
+    ) { }
 
-  onSubmit() {
-    const product = this.productForm.value;
-    console.log("Product submitted:", product);
+    ngOnInit() {
+        this.userId = Number(localStorage.getItem("user_id"));
+        this.productForm = this.formBuilder.group({
+            warehouse: ["", Validators.required],
+            productDescription: ["", Validators.required],
+            productName: [null, Validators.required],
+            quantity: [null, [Validators.required, Validators.min(0)]],
+            price: [null, [Validators.required, Validators.min(1)]],
+        });
+        this.warehouses = this.supplyLinkService.getWarehousesBySupplier(this.userId);
+    }
 
-    // Further processing can be added here
-  }
+    onSubmit() {
+        this.isFormSubmitted = true;
+        this.productSuccess = of('');
+        this.productError = of('');
+
+        if (this.productForm.invalid) {
+            return;
+        }
+        this.supplyLinkService.addProduct(this.productForm.value).subscribe({
+            next: (response) => {
+                this.productSuccess = of("Product created successfully");
+                this.productForm.reset();
+                this.isFormSubmitted = false;
+            },
+            error: (error) => this.productError = of("Unable to create product")
+        });
+    }
 } 

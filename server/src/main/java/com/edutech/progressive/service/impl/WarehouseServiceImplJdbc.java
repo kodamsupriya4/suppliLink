@@ -1,60 +1,53 @@
 package com.edutech.progressive.service.impl;
 
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.edutech.progressive.dao.WarehouseDAO;
+import com.edutech.progressive.entity.Supplier;
 import com.edutech.progressive.entity.Warehouse;
 import com.edutech.progressive.service.WarehouseService;
 
+import java.sql.SQLException;
+import java.util.Comparator;
+import java.util.List;
 
-// @Service("warehouseServiceJdbc")
-public class WarehouseServiceImplJdbc  implements WarehouseService {
+public class WarehouseServiceImplJdbc implements WarehouseService {
 
-
-    // private WarehouseServiceImplJdbc warehouseServiceImplJdbc;
     private WarehouseDAO warehouseDAO;
 
-    @Autowired
-   public WarehouseServiceImplJdbc(WarehouseDAO warehouseDAO) {
-    this.warehouseDAO = warehouseDAO;
-}
-
+    public WarehouseServiceImplJdbc(WarehouseDAO warehouseDAO) {
+        this.warehouseDAO = warehouseDAO;
+    }
 
     @Override
-    public List<Warehouse> getAllWarehouses() {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'getAllWarehouses'");
+    public List<Warehouse> getAllWarehouses() throws SQLException {
         return warehouseDAO.getAllWarehouse();
     }
 
-
-
- @Override
-    public int addWarehouse(Warehouse warehouse) {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationExce
-        // ption("Unimplemented method 'addWarehouse'");
-        try {
-            return warehouseDAO.addWarehouse(warehouse);
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return -1;
+    @Override
+    public int addWarehouse(Warehouse warehouse) throws SQLException {
+        return warehouseDAO.addWarehouse(warehouse);
     }
 
     @Override
-    public List<Warehouse> getWarehousesSortedByCapacity() {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'getWarehousesSortedByCapacity'");
-        List<Warehouse> w = getAllWarehouses();
-        Collections.sort(w);
-        return w;
+    public List<Warehouse> getWarehousesSortedByCapacity() throws SQLException {
+        List<Warehouse> sortedWarehouse = warehouseDAO.getAllWarehouse();
+        if (sortedWarehouse != null) {
+            sortedWarehouse.sort(Comparator.comparingInt(Warehouse::getCapacity)); // Sort by capacity
+        }
+        return sortedWarehouse;
     }
 
-} 
+    @Override
+    public void updateWarehouse(Warehouse warehouse) throws SQLException {
+        warehouseDAO.updateWarehouse(warehouse);
+    }
+
+    @Override
+    public void deleteWarehouse(int warehouseId) throws SQLException {
+        warehouseDAO.deleteWarehouse(warehouseId);
+    }
+
+    @Override
+    public Warehouse getWarehouseById(int warehouseId) throws SQLException {
+        return warehouseDAO.getWarehouseById(warehouseId);
+    }
+}
